@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mysql:8
+    container_name: mysql-booksite
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: booksite
+      MYSQL_USER: bookuser
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+
+volumes:
+  mysqldata:
