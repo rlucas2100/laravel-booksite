@@ -75,7 +75,5 @@
                 DELETE CATEGORY
             </button>
         </form>
-
-
     </section>
 </x-app-layout>

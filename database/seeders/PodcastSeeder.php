@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Podcast;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,6 +15,7 @@ class PodcastSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Podcast::factory(30)->create();
+
     }
 }

@@ -11,6 +11,12 @@ class Category extends Model
 
     protected $fillable = ['name', 'slug'];
 
+
+    public function podcasts()
+    {
+        return $this->hasMany(Podcast::class);
+    }
+
     public function books()
     {
         return $this->hasMany(Book::class);

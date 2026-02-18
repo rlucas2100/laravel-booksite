@@ -17,7 +17,7 @@
                     </x-nav-link>
                 </div>
             </div>
-            <h1 class="text-4xl items-center font-serif py-3">
+            <h1 class="text-4xl items-center font-serif py-3 text-green-900">
                 <a href="{{ route('welcome') }}">Book Site</a>
             </h1>
 
@@ -27,11 +27,11 @@
                     <x-slot name="trigger">
                         <button
                             class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                            <div class="text-white">@auth
+                            <div class="text-black">@auth
                                     {{ Auth::user()->name }}
                                 @endauth</div>
                             @auth
-                                <div class="ml-1 text-white">
+                                <div class="ml-1 text-black">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                          viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"

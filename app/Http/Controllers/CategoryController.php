@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Podcast;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -55,7 +56,6 @@ class CategoryController extends Controller
 
         $attributes['slug'] = Str::slug($request->name);
 
-
         Category::create($attributes);
 
         return redirect('/categories');
@@ -72,9 +72,31 @@ class CategoryController extends Controller
     public function show(Category $category): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
     {
 
-        return view('categories.show')->with('category', $category);
+//        return view('categories.show')->with('category', $category);
+
+//        return view('admin.books.index', [
+//            'books' => Book::paginate(50)
+//        ]);
+
+//
+//        'books' is variable i am passing into show view
+//        $category is the cat you click on home page, categories/aut in url
+        return view('categories.show', [
+            'books' => Book::where('category_id', $category->id)->paginate(3),
+            'podcasts' => Podcast::all()
+            ])->with('category', $category);
     }
 
+    public function allCatBooks(Category $category): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
+    {
+
+        return view('categories.all-cat-books')->with('category', $category)->paginate(5);
+    }
+
+//    public function getCatBooks()
+//    {
+//        return Book::paginate(3);
+//    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -98,7 +120,6 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category): \Illuminate\Http\RedirectResponse
     {
-
 
         $attributes = request()->validate([
             'name' => 'required'
@@ -132,6 +153,5 @@ class CategoryController extends Controller
 
 // comments table
 // a book can have many comments. one to many
-
 
 // comments on books one relationship in mind

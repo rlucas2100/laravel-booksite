@@ -18,10 +18,9 @@ return new class extends Migration
 //            podcasts are deleted when their parent users are deleted
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('category_id');
-            $table->string('title')->unique();
+            $table->string('title');
             $table->string('description');
-            $table->string('author')->unique();
-            $table->string('podcast');
+            $table->string('audio_url');
             $table->timestamps();
         });
     }

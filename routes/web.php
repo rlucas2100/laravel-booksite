@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PodcastController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 use App\Models\Book;
@@ -37,8 +38,11 @@ Route::group(['middleware' => ['can:manage-users']], function () {
     Route::resource('users', UserController::class);
 
 });
-// TODO take categories out of group midddleware and make a category policy so guest users can browse all books
+
+Route::resource('comments', \App\Http\Controllers\CommentController::class);
+
 Route::resource('categories', CategoryController::class);
+
 
 //Route::group(['middleware' => ['auth']], function () {
 
@@ -46,8 +50,21 @@ Route::resource('books', BookController::class); // was can:edit-books
 //  Route::get('books/slug', [BookController::class, 'show'])->middleware('guest');
 //  Route::get('/', [BookController::class, 'index'])->name('home');
 
+//Route::resource('podcasts', PodcastController::class);
+
+//Route::get('podcasts', [PodcastController::class, 'index']);
+//Route::get('/podcasts/show', [PodcastController::class, 'show']);
+
+
+
+// {category} model below
+Route::get('/all-cat-books/{category}', [CategoryController::class, 'allCatBooks'])->name('cat-books');
+
+Route::get('/all-podcasts', [PodcastController::class, 'allPodcasts'])->name('all-podcasts');
 
 Route::get('/', [BookController::class, 'welcome'])->name('welcome');
+
+//Route::get('/categories/show', [CategoryController::class, 'show']);
 
 Route::get('test', [TestController::class, 'index']);
 

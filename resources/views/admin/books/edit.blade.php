@@ -1,4 +1,3 @@
-{{--<script src="https://cdn.tailwindcss.com"></script>--}}
 <x-app-layout>
 
     <x-slot name="header">
@@ -150,9 +149,7 @@
 
                     <button type="submit" class="">
                         Submit
-
                     </button>
-
                 </div>
 
             </div>

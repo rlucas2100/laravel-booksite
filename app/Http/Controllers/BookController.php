@@ -49,11 +49,17 @@ class BookController extends Controller
     public function welcome(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         return view('welcome', [
-            'books' => Book::showOnHomePage(12),
+            'books' => Book::showOnHomePage(),
             'categories' => Category::all()
         ]);
     }
-
+// a Comment model might belong to both the Book and Podcast models.
+//    public function categoryBooks(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
+//    {
+//        return view ('category.show', [
+//            'books' => Book::paginate(50)
+//        ]);
+//    }
 
     public function myBooks(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
@@ -158,7 +164,7 @@ class BookController extends Controller
 
         $attributes['slug'] = Str::slug($request->title);
         $attributes['uuid'] = Str::uuid();
-        $attributes['user_id'] = auth()->id();
+//        $attributes['user_id'] = auth()->id();
         $attributes['thumbnail'] = \request()->file('thumbnail')->store('thumbnails');
         $attributes['pdf'] = \request()->file('pdf')->store('pdfs');
 
@@ -166,6 +172,7 @@ class BookController extends Controller
         return to_route('books.show', $book)->with('success', 'Book updated');
 
     }
+
     /**
      * Remove the specified resource from storage.
      *
