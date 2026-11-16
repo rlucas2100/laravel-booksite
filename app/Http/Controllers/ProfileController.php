@@ -2,66 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\View\View
-     */
-    public function edit(Request $request)
+    public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
+        return view('profile.edit', ['user' => $request->user()]);
+    }
+
+    public function update(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $this->refuseIfProtected($request);
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:60'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
         ]);
+
+        $user->update($data);
+
+        return back()->with('status', 'Profile saved.');
     }
 
-    /**
-     * Update the user's profile information.
-     *
-     * @param  \App\Http\Requests\ProfileUpdateRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(ProfileUpdateRequest $request)
+    public function password(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $this->refuseIfProtected($request);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+        $data = $request->validateWithBag('password', [
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
 
-        $request->user()->save();
+        $request->user()->update(['password' => $data['password']]);   // hashed by the model's cast
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return back()->with('status', 'Password changed.');
     }
 
-    /**
-     * Delete the user's account.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy(Request $request)
+    public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current-password'],
+        $this->refuseIfProtected($request);
+
+        $request->validateWithBag('deletion', [
+            'password' => ['required', 'current_password'],
         ]);
 
         $user = $request->user();
 
         Auth::logout();
-
-        $user->delete();
+        $user->delete();   // uploads, reviews and comments go with the account
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return redirect()->route('home')->with('status', 'Your account was deleted. Goodbye, and thanks for reading.');
+    }
+
+    /** The shared demo accounts stay as they are, so the next visitor can still sign in. */
+    private function refuseIfProtected(Request $request): void
+    {
+        abort_if($request->user()->protected, 403, 'This is a shared demo account, so its details can\'t be changed. Create your own free account to try this.');
     }
 }

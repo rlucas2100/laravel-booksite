@@ -1,64 +1,47 @@
-<x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-            </a>
-        </x-slot>
+<x-auth-card title="Join" heading="Join free" intro="An account lets you download books, rate and review, comment and upload." mood="5" tone="mint">
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
+        @csrf
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+        <div>
+            <label class="label" for="name">Name</label>
+            <input id="name" class="input" type="text" name="name" value="{{ old('name') }}" maxlength="60" required autofocus autocomplete="name">
+            <p class="hint">Shown beside your reviews and comments.</p>
+            <x-error for="name"/>
+        </div>
 
-            <!-- Name -->
+        <div>
+            <label class="label" for="email">Email</label>
+            <input id="email" class="input" type="email" name="email" value="{{ old('email') }}" required autocomplete="username">
+            <x-error for="email"/>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
             <div>
-                <x-input-label for="name" :value="__('Name')" />
-
-                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
-
-                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                <label class="label" for="password">Password</label>
+                <input id="password" class="input" type="password" name="password" required minlength="8" autocomplete="new-password">
+                <p class="hint">At least 8 characters.</p>
             </div>
-
-            <!-- Email Address -->
-            <div class="mt-4">
-                <x-input-label for="email" :value="__('Email')" />
-
-                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
-
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <div>
+                <label class="label" for="password_confirmation">And again</label>
+                <input id="password_confirmation" class="input" type="password" name="password_confirmation" required minlength="8" autocomplete="new-password">
             </div>
+        </div>
+        <x-error for="password"/>
 
-            <!-- Password -->
-            <div class="mt-4">
-                <x-input-label for="password" :value="__('Password')" />
+        @if (\App\Support\Sandbox::enabled())
+            <p class="flex items-start gap-2 rounded-xl border-2 border-line bg-sun p-3 text-sm font-semibold text-night">
+                <x-icon name="info" size="h-4.5 w-4.5" class="mt-0.5"/>
+                This is a demo: accounts made here are deleted after {{ config('shop.sandbox_hours') }} hours. A made-up email address is fine.
+            </p>
+        @endif
 
-                <x-text-input id="password" class="block mt-1 w-full"
-                                type="password"
-                                name="password"
-                                required autocomplete="new-password" />
+        <button type="submit" class="btn btn-lg btn-primary w-full">Create my account</button>
+    </form>
 
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
-            </div>
+    <p class="mt-5 text-sm">Already a member? <a class="font-bold underline underline-offset-2" href="{{ route('login') }}">Sign in</a>.</p>
 
-            <!-- Confirm Password -->
-            <div class="mt-4">
-                <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-                <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required />
-
-                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-primary-button class="ml-4">
-                    {{ __('Register') }}
-                </x-primary-button>
-            </div>
-        </form>
-    </x-auth-card>
-</x-guest-layout>
+    <x-slot:aside>
+        <p class="pow text-4xl">Pull up a chair!</p>
+        <p class="mt-2 font-semibold">Everything on the shelves is free. All we ask for is your honest star rating.</p>
+    </x-slot:aside>
+</x-auth-card>

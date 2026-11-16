@@ -1,35 +1,24 @@
-<x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-            </a>
-        </x-slot>
+<x-auth-card title="Forgot password" heading="Lost your password?" intro="Tell us your email address and we’ll send a link to choose a new one." mood="2" tone="cobalt">
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
+        @csrf
 
-        <div class="mb-4 text-sm text-gray-600">
-            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+        <div>
+            <label class="label" for="email">Email</label>
+            <input id="email" class="input" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+            <x-error for="email"/>
         </div>
 
-        <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')" />
+        @if (config('mail.default') === 'log')
+            <p class="hint">This site isn’t connected to an email service, so the link is written to the server’s log instead of being sent.</p>
+        @endif
 
-        <form method="POST" action="{{ route('password.email') }}">
-            @csrf
+        <button type="submit" class="btn btn-lg btn-primary w-full">Email me a reset link</button>
+    </form>
 
-            <!-- Email Address -->
-            <div>
-                <x-input-label for="email" :value="__('Email')" />
+    <p class="mt-5 text-sm"><a class="font-bold underline underline-offset-2" href="{{ route('login') }}">Back to sign in</a></p>
 
-                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <x-primary-button>
-                    {{ __('Email Password Reset Link') }}
-                </x-primary-button>
-            </div>
-        </form>
-    </x-auth-card>
-</x-guest-layout>
+    <x-slot:aside>
+        <p class="pow text-4xl">It happens.</p>
+        <p class="mt-2 font-semibold">Pip loses his bookmark at least once a week.</p>
+    </x-slot:aside>
+</x-auth-card>

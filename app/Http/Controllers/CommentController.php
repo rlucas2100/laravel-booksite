@@ -2,122 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Book;
 use App\Models\Comment;
+use App\Models\Entry;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    /** Add a comment to an entry, or a reply to one of its comments. */
+    public function store(Request $request, Entry $entry): RedirectResponse
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-
-    public function store(Comment $comment, Request $request)
-    {
-
-
-//        dd($input);
-
-        // validation
-//        request()->validate([
-//            'body' => 'required',
-//
-//        ]);
-
-        $attributes = request()->validate([
-            'body' => 'required',
+        $data = $request->validateWithBag('comment', [
+            'body' => ['required', 'string', 'max:'.Comment::MAX_LENGTH],
+            'parent_id' => ['nullable', 'integer'],
+        ], [
+            'body.required' => 'Write something first.',
         ]);
-        $attributes['user_id'] = request()->user()->id;
-        $attributes['book_id'] = Book::find($request['book_id']);
-        $request = $request->all();
 
-//        $book = Book::find($request['book_id']);
-//        $book->comments()->save($comment);
-        $attributes->comments()->save($attributes);
+        $comment = new Comment(['body' => $data['body']]);
+        $comment->entry_id = $entry->id;
+        $comment->user_id = $request->user()->id;
 
+        if (! empty($data['parent_id'])) {
+            // The parent must be a comment on this same entry. A reply to a reply joins the same thread.
+            $parent = $entry->comments()->findOrFail($data['parent_id']);
+            $comment->parent_id = $parent->parent_id ?? $parent->id;
+        }
 
-//        $comment->comments()->save($attributes);
+        $comment->save();
 
-//        Comment::create($attributes);
-//        $request = $request->all();
-//        $book = Book::find($request['book_id']);
-//        $book->comments()->save($comment);
-
-
-        // add a comment to the given post
-//        $comment->commentable()->create([
-//            'user_id' => request()->user()->id,
-//            'body' => request('body')
-//        ]);
-
-        return back();
+        return redirect()->to($entry->url().'#comment-'.$comment->id)->with('status', 'Comment posted.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function destroy(Comment $comment): RedirectResponse
     {
-        //
-    }
+        $this->authorize('delete', $comment);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+        $comment->delete();   // replies to it go too
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return back()->with('status', 'The comment was removed.');
     }
 }

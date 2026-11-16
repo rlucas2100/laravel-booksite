@@ -1,66 +1,134 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Cliffhanger
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A bookshop-style library for **books, video, audio and blog posts**, where members can rate anything
+from **0 to 5 stars**, write reviews and talk in comment threads.
 
-## About Laravel
+Built with **Laravel 13, Blade, Tailwind CSS 4 and Alpine.js**. No JavaScript framework and no CDN:
+every font, script and style is served by the site itself.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![The home page](docs/home.png)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+![A book's page, with reviews and the conversation](docs/book.png)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Where it came from
 
-## Learning Laravel
+This started in 2023, during a seven-month internship at a software company, as a Laravel 9 "book site":
+members uploaded a book as a PDF with a thumbnail, and admins managed books, categories and users.
+The brief kept growing (video uploads next, then podcasts), with one firm rule: **everything had to be
+stored in the same table**. That version stopped at an empty `podcasts` table.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+This is the rebuild. The 2023 code is kept, untouched, under the
+[`2023-original`](https://github.com/rlucas2100/laravel-booksite/tree/2023-original) tag.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## What it does
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Four kinds of entry on one set of shelves**: books (PDF), video (MP4/WebM), audio (MP3/M4A/OGG/WAV)
+  and articles (Markdown).
+- **Star reviews from 0 to 5**, one per member per entry, with a headline and text. The mascot on the
+  review form changes his face as you pick a score. Averages and a score chart on every entry.
+- **Comments with replies** under every entry, drawn as speech bubbles.
+- **Upload form** that changes with the type you pick, accepts drag and drop, checks file type and size
+  before sending, and reads a recording's length in the browser.
+- **A cover is drawn for anything uploaded without one**: nine motifs in ten palettes, chosen from the
+  entry's address so the same entry always looks the same.
+- **A cassette-style audio player** (skip 15 seconds, change speed, remembers where you stopped) and a
+  video player. Files are streamed with range requests, so you can skip around.
+- **Search, filters and sorting** (newest, top rated, most talked about, A to Z), categories, light and
+  dark themes, and layouts for phones.
+- **Accounts and roles**: member, admin and owner, using policies and
+  [spatie/laravel-permission](https://github.com/spatie/laravel-permission). An admin area for the
+  catalogue, members, categories, and moderating reviews and comments.
 
-## Laravel Sponsors
+## One table for everything
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+The answer to "how do I store books, videos and podcasts in the same table?" is a `type` column:
 
-### Premium Partners
+| File | What it does |
+| --- | --- |
+| [`database/migrations/..._create_entries_table.php`](database/migrations/2026_11_16_060100_create_entries_table.php) | One `entries` table. Columns a type doesn't use stay empty. |
+| [`app/Enums/EntryType.php`](app/Enums/EntryType.php) | The four types, and everything that differs between them: labels, addresses, accepted files, size limits, cover shape, colour. |
+| [`app/Models/Entry.php`](app/Models/Entry.php) | One model. `type` is cast to the enum. |
+| [`app/Http/Requests/EntryRequest.php`](app/Http/Requests/EntryRequest.php) | The validation rules follow the type: a book needs a PDF, an article needs its text. |
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Because every entry is a row in the same table, reviews, comments and categories each need only one
+foreign key (`entry_id`), and one controller and one set of views serve all four shelves. Adding a
+fifth type means adding one `case` to the enum.
 
-## Contributing
+## Safe to leave open: the public demo
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+With `SHOP_DEMO=true` the site can be put online for anyone to try, without becoming a noticeboard for
+strangers:
 
-## Code of Conduct
+- Everything a visitor creates (an account, an upload, a review, a comment) is tagged with a random
+  token kept in a cookie, and is **only shown to that browser**.
+- The shop's own books, members and reviews are **locked**, even for the demo admin account.
+- Visitors' things are **deleted after 24 hours**, and each visitor can upload only a few files.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+It is one trait and one small class: [`app/Models/Concerns/Sandboxed.php`](app/Models/Concerns/Sandboxed.php)
+and [`app/Support/Sandbox.php`](app/Support/Sandbox.php), covered by
+[`tests/Feature/PublicDemoTest.php`](tests/Feature/PublicDemoTest.php).
 
-## Security Vulnerabilities
+## Security
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Policies decide who may edit or delete; checked on the server for every request.
+- Uploads are stored outside the public folder under random names and handed out by a controller. The
+  `Content-Type` comes from the site's own list, never from the uploaded file.
+- Passwords are hashed with bcrypt. Sign-in, sign-up, reviews, comments and uploads are rate limited.
+- A Content-Security-Policy that allows no inline scripts and no outside hosts; CSRF tokens on every
+  form; Markdown is rendered with raw HTML removed.
 
-## License
+## Run it on your own machine
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+You need PHP 8.3 or newer (with the `pdo_sqlite` extension), Composer and Node 20 or newer.
+
+```bash
+composer run setup      # installs everything, creates the SQLite database and fills the shelves
+php artisan serve       # http://localhost:8000
+```
+
+`npm run dev` rebuilds the CSS and JavaScript as you edit.
+
+On a local machine the seeder makes two accounts to try:
+
+| | Email | Password |
+| --- | --- | --- |
+| A reader | `reader@example.com` | `turn-the-page` |
+| An admin | `admin@example.com` | `shelf-control` |
+
+For an owner account (every permission), set `OWNER_EMAIL` and `OWNER_PASSWORD` in `.env` before seeding.
+
+## Tests
+
+```bash
+php artisan test
+```
+
+57 tests: browsing and search, uploads for each type, the 0 to 5 star rules, comments and replies,
+file access, accounts, the admin area and the public-demo rules.
+
+## Putting it on shared hosting
+
+Shared hosting usually has no command line and can't point a domain at Laravel's `public` folder, so
+there is a script that builds one self-contained folder to upload by FTP:
+
+```bash
+php tools/deploy.php "C:\path\to\website\bookshop" https://example.com/bookshop
+```
+
+The site needs PHP 8.3 on the server and installs itself (database and sample content) the first time
+it is opened. Its database, sessions and uploads are kept in a `bookshop-data` folder next to the
+website folder, so uploading a new version never touches them. See the notes at the top of
+[`tools/deploy.php`](tools/deploy.php).
+
+## What's on the shelves
+
+- **Books**: 28 classics that are in the public domain. Each has a short PDF sampler made by the seeder
+  and a link to the full text at [Project Gutenberg](https://www.gutenberg.org/).
+- **Audio**: five poems read by [LibriVox](https://librivox.org/) volunteers, who give their recordings
+  to the public domain.
+- **Video**: three short animated trailers made for this project.
+- **Reviews and comments**: written for the demo. The readers are made up.
+
+## Author
+
+Made by AstroQuack ([rlucas2100](https://github.com/rlucas2100)).

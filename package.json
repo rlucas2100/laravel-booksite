@@ -1,30 +1,21 @@
 {
+    "$schema": "https://www.schemastore.org/package.json",
     "private": true,
+    "type": "module",
     "scripts": {
-        "dev": "npm run development",
-        "development": "mix",
-        "watch": "mix watch",
-        "watch-poll": "mix watch -- --watch-options-poll=1000",
-        "hot": "mix watch --hot",
-        "prod": "npm run production",
-        "production": "mix --production"
+        "build": "vite build",
+        "dev": "vite"
     },
     "devDependencies": {
-        "@popperjs/core": "^2.10.2",
-        "@tailwindcss/forms": "^0.5.3",
-        "axios": "^0.25",
-        "bootstrap": "^5.1.3",
-        "laravel-mix": "^6.0.49",
-        "lodash": "^4.17.19",
-        "mix-tailwindcss": "^1.3.0",
-        "postcss": "^8.1.14",
-        "resolve-url-loader": "^5.0.0",
-        "sass": "^1.32.11",
-        "sass-loader": "^11.0.1",
-        "tailwindcss": "^3.3.1"
+        "@tailwindcss/vite": "^4.0.0",
+        "laravel-vite-plugin": "^3.1",
+        "tailwindcss": "^4.0.0",
+        "vite": "^8.0.0"
     },
     "dependencies": {
-        "alpinejs": "^3.10.5",
-        "flowbite": "^1.5.5"
+        "@fontsource-variable/dm-sans": "^5.3.0",
+        "@fontsource-variable/fraunces": "^5.3.0",
+        "@fontsource/bangers": "^5.3.0",
+        "alpinejs": "^3.17.5"
     }
 }
