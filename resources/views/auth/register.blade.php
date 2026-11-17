@@ -1,4 +1,4 @@
-<x-auth-card title="Join" heading="Join free" intro="An account lets you download books, rate and review, comment and upload." mood="5" tone="mint">
+<x-auth-card title="Join" heading="Join free" intro="An account lets you download and buy books, rate and review, comment and upload." mood="5" tone="mint">
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
 
@@ -42,6 +42,6 @@
 
     <x-slot:aside>
         <p class="pow text-4xl">Pull up a chair!</p>
-        <p class="mt-2 font-semibold">Everything on the shelves is free. All we ask for is your honest star rating.</p>
+        <p class="mt-2 font-semibold">Most of the shelves are free. All we ask for is your honest star rating.</p>
     </x-slot:aside>
 </x-auth-card>

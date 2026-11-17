@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <title>{{ $title ? $title.' · ' : '' }}{{ config('app.name') }}{{ $title ? '' : ': '.config('shop.tagline') }}</title>
-    <meta name="description" content="{{ $description ?? 'Books, video and audio from the public domain, with star reviews and comments. '.config('shop.tagline') }}">
+    <meta name="description" content="{{ $description ?? 'A bookshop for books, video and audio, with star reviews, comments and a basket. '.config('shop.tagline') }}">
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 
     {{-- Sets dark mode before anything is drawn. A file, not an inline script, so the Content-Security-Policy can stay strict. --}}

@@ -70,11 +70,11 @@ MD,
     ],
     [
         'slug' => 'why-everything-here-is-free',
-        'title' => 'Why everything on these shelves is free',
+        'title' => 'Why so much on these shelves is free',
         'creator' => 'The Cliffhanger desk',
         'category' => 'behind-the-books',
         'design' => 'arcs:cobalt',
-        'description' => 'Every book here is in the public domain. What that means, and where the files come from.',
+        'description' => 'Every book here is in the public domain. What that means, where the files come from, and why some have a price anyway.',
         'body' => <<<'MD'
 Every book on these shelves is in the public domain. That means its copyright has run out and the work now belongs to everybody: you can read it, copy it, print it, record it or turn it into a film without asking anyone.
 
@@ -87,6 +87,10 @@ In the UK and most of Europe, copyright lasts for the author's lifetime and then
 The full texts are looked after by [Project Gutenberg](https://www.gutenberg.org/), whose volunteers have been typing up and proofreading old books since 1971. The recordings on our [audio shelf](/audio) come from [LibriVox](https://librivox.org/), where volunteers read public-domain books aloud and give the recordings away.
 
 Each book page here has a short sampler to download and a link to the complete text.
+
+## So why do some have a price?
+
+Because this shop is a demonstration, and a shop needs a till. Some titles carry a price so the basket and the checkout have something to do. Payments run in Stripe's test mode: no real money changes hands, and the full text of every book is still free at Project Gutenberg.
 
 ## Why bother with old books?
 

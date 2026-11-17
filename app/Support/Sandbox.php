@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Entry;
+use App\Models\Order;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -120,7 +121,7 @@ class Sandbox
             $deleted = 0;
 
             // Models are deleted one by one so their files are removed with them.
-            foreach ([Comment::class, Review::class, Entry::class, User::class] as $model) {
+            foreach ([Comment::class, Review::class, Order::class, Entry::class, User::class] as $model) {
                 $model::query()->whereNotNull('sandbox')->where('created_at', '<', $before)->get()
                     ->each(function (Model $record) use (&$deleted) {
                         $record->delete();

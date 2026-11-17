@@ -68,7 +68,7 @@ enum EntryType: string
     public function intro(): string
     {
         return match ($this) {
-            self::Book => 'Classics from the public domain, free to download and keep.',
+            self::Book => 'Classics from the public domain, to download and keep. Many are free.',
             self::Video => 'Trailers and short films about books worth your evening.',
             self::Audio => 'Poems, stories and podcasts read aloud. Press play.',
             self::Article => 'Notes from the desk: reading lists, how-tos and opinions.',

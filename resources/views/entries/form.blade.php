@@ -112,7 +112,15 @@
                     <x-error for="year"/>
                 </div>
 
-                <div :class="type === 'article' ? 'sm:col-span-2' : ''">
+                <div>
+                    <label class="label" for="price">Price in £ <span class="font-normal text-soft">(optional)</span></label>
+                    <input id="price" class="input" type="number" name="price" min="0" max="99.99" step="0.01" inputmode="decimal"
+                           value="{{ old('price', $entry?->price ? number_format($entry->price / 100, 2, '.', '') : '') }}" placeholder="Leave empty to give it away">
+                    <p class="hint">Members then pay before they can download or play it.</p>
+                    <x-error for="price"/>
+                </div>
+
+                <div :class="type === 'article' ? '' : 'sm:col-span-2'">
                     <label class="label" for="link">Link <span class="font-normal text-soft">(optional)</span></label>
                     <input id="link" class="input" type="url" name="link" value="{{ old('link', $entry?->link) }}" maxlength="255" placeholder="https://… where to find out more">
                     <x-error for="link"/>

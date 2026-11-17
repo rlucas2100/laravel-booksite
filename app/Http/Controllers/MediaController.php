@@ -36,6 +36,19 @@ class MediaController extends Controller
             return redirect()->route('login')->with('status', 'Sign in to download books. It\'s free.');
         }
 
+        // Something with a price is only for the member who bought it (or uploaded it).
+        if (! $entry->isFree()) {
+            if (! $request->user()) {
+                $request->session()->put('url.intended', $entry->url());
+
+                return redirect()->route('login')->with('status', 'Sign in to buy this, or to open it if it is already yours.');
+            }
+
+            if (! $request->user()->mayOpen($entry)) {
+                return redirect()->to($entry->url())->with('status', 'That one is '.$entry->priceLabel().'. Add it to your basket to get it.');
+            }
+        }
+
         $path = Storage::disk(Entry::DISK)->path($entry->file_path);
         $headers = [
             'Content-Type' => $entry->fileContentType(),

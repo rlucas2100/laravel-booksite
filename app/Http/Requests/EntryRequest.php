@@ -52,6 +52,7 @@ class EntryRequest extends FormRequest
             'description' => ['required', 'string', 'min:10', 'max:1000'],
             'body' => [$type === EntryType::Article ? 'required' : 'nullable', 'string', 'max:30000'],
             'link' => ['nullable', 'url:https', 'max:255'],
+            'price' => ['nullable', 'numeric', 'min:0', 'max:99.99'],   // pounds; empty or 0 = free
             'duration' => ['nullable', 'integer', 'between:1,86400'],
             'cover' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:'.config('shop.max_kb.cover'), 'dimensions:max_width=5000,max_height=5000'],
         ];

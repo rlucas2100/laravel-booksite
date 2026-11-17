@@ -17,6 +17,25 @@ use Illuminate\Support\Facades\Storage;
  */
 class LibrarySeeder extends Seeder
 {
+    /** What costs money in the demo, in pence. Everything else is free. */
+    public const PRICES = [
+        'dracula' => 299,
+        'pride-and-prejudice' => 249,
+        'the-count-of-monte-cristo' => 499,
+        'moby-dick' => 399,
+        'frankenstein' => 199,
+        'the-adventures-of-sherlock-holmes' => 349,
+        'jane-eyre' => 299,
+        'the-picture-of-dorian-gray' => 249,
+        'the-hound-of-the-baskervilles' => 199,
+        'the-war-of-the-worlds' => 199,
+        'emma' => 249,
+        'the-moonstone' => 299,
+        'kubla-khan' => 99,
+        'o-captain-my-captain' => 79,
+        'invictus' => 79,
+    ];
+
     private User $desk;
 
     /** @var array<string, int> category slug => id */
@@ -111,6 +130,7 @@ class LibrarySeeder extends Seeder
             'description' => $data['description'],
             'cover_design' => $data['design'] ?? null,
             'featured' => $data['featured'] ?? false,
+            'price' => self::PRICES[$data['slug']] ?? null,
             'published_at' => $when,
             'created_at' => $when,
             'updated_at' => $when,

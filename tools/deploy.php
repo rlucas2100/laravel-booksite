@@ -95,6 +95,8 @@ $settings = [
     'SHOP_DEMO' => $settings['SHOP_DEMO'] ?? 'true',
     'SHOP_HOME_URL' => $settings['SHOP_HOME_URL'] ?? '',
     'SHOP_SOURCE_URL' => $settings['SHOP_SOURCE_URL'] ?? '',
+    'STRIPE_SECRET' => $settings['STRIPE_SECRET'] ?? '',                  // a TEST key (sk_test_...) for the demo
+    'STRIPE_WEBHOOK_SECRET' => $settings['STRIPE_WEBHOOK_SECRET'] ?? '',  // whsec_..., from the webhook endpoint in Stripe
 ];
 
 $lines = "# Settings for the live site, written by tools/deploy.php. Keep this file private.\n";
@@ -194,6 +196,8 @@ file_put_contents($app.'/.env', implode("\n", [
     "OWNER_PASSWORD_HASH='".$settings['OWNER_PASSWORD_HASH']."'",
     'SHOP_HOME_URL='.$settings['SHOP_HOME_URL'],
     'SHOP_SOURCE_URL='.$settings['SHOP_SOURCE_URL'],
+    'STRIPE_SECRET='.$settings['STRIPE_SECRET'],
+    'STRIPE_WEBHOOK_SECRET='.$settings['STRIPE_WEBHOOK_SECRET'],
     '',
 ]));
 

@@ -69,4 +69,8 @@ return [
 
     'per_page' => 12,
 
+    // Change this when the database or the sample content changes. A self-installed
+    // demo (SHOP_AUTO_INSTALL) rebuilds itself when it sees a new value.
+    'version' => '2',
+
 ];

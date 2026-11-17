@@ -35,6 +35,7 @@
     @case('forward')<path d="m13 7 5 5-5 5"/><path d="m6 7 5 5-5 5"/>@break
     @case('tag')<path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.3"/>@break
     @case('star')<path d="M12 2.8l2.83 5.74 6.34.92-4.59 4.47 1.08 6.31L12 17.26l-5.66 2.98 1.08-6.31L2.83 9.46l6.34-.92L12 2.8z"/>@break
+    @case('basket')<path d="M3 9h18l-1.600 10a1.500 1.500 0 0 1-1.500 1.300H6.100a1.500 1.500 0 0 1-1.500-1.300L3 9Z"/><path d="M8 9l3-6M16 9l-3-6M9.500 13v3.500M14.500 13v3.500"/>@break
     @case('info')<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>@break
 @endswitch
 </svg>

@@ -27,6 +27,8 @@ This is the rebuild. The 2023 code is kept, untouched, under the
 - **Star reviews from 0 to 5**, one per member per entry, with a headline and text. The mascot on the
   review form changes his face as you pick a score. Averages and a score chart on every entry.
 - **Comments with replies** under every entry, drawn as speech bubbles.
+- **Prices, a basket and a checkout**: any entry can have a price in pounds. Buyers pay on Stripe's hosted
+  Checkout page (test mode in the demo, so no real money moves), and what they buy is unlocked in "My library".
 - **Upload form** that changes with the type you pick, accepts drag and drop, checks file type and size
   before sending, and reads a recording's length in the browser.
 - **A cover is drawn for anything uploaded without one**: nine motifs in ten palettes, chosen from the
@@ -53,6 +55,19 @@ The answer to "how do I store books, videos and podcasts in the same table?" is 
 Because every entry is a row in the same table, reviews, comments and categories each need only one
 foreign key (`entry_id`), and one controller and one set of views serve all four shelves. Adding a
 fifth type means adding one `case` to the enum.
+
+## Payments
+
+Paying uses [Stripe Checkout](https://stripe.com/payments/checkout) over plain HTTPS calls, with no SDK:
+[`app/Support/Stripe.php`](app/Support/Stripe.php).
+
+1. The basket becomes a `pending` order and a Checkout Session is created for it.
+2. The buyer pays on Stripe's own page, so no card number ever reaches this site.
+3. Back at the shop, the order is only marked `paid` after asking Stripe itself whether the session was paid.
+   Stripe also reports it through a signed webhook (`/stripe/webhook`), in case the buyer closes the tab.
+
+Prices are stored as whole pence. In demo mode the code refuses anything but a test key (`sk_test_...`).
+To try it, put your Stripe test key in `.env` as `STRIPE_SECRET` and pay with the card `4242 4242 4242 4242`.
 
 ## Safe to leave open: the public demo
 
@@ -103,8 +118,8 @@ For an owner account (every permission), set `OWNER_EMAIL` and `OWNER_PASSWORD` 
 php artisan test
 ```
 
-57 tests: browsing and search, uploads for each type, the 0 to 5 star rules, comments and replies,
-file access, accounts, the admin area and the public-demo rules.
+67 tests: browsing and search, uploads for each type, the 0 to 5 star rules, comments and replies,
+file access, accounts, the admin area, the public-demo rules, and the basket and checkout (with Stripe faked).
 
 ## Putting it on shared hosting
 
@@ -123,7 +138,8 @@ website folder, so uploading a new version never touches them. See the notes at 
 ## What's on the shelves
 
 - **Books**: 28 classics that are in the public domain. Each has a short PDF sampler made by the seeder
-  and a link to the full text at [Project Gutenberg](https://www.gutenberg.org/).
+  and a link to the full text at [Project Gutenberg](https://www.gutenberg.org/). Some carry a demo price
+  so the checkout has something to sell.
 - **Audio**: five poems read by [LibriVox](https://librivox.org/) volunteers, who give their recordings
   to the public domain.
 - **Video**: three short animated trailers made for this project.

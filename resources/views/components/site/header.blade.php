@@ -3,6 +3,7 @@
 
     $onShelf = request()->route()?->parameter('shelf');   // the EntryType of the shelf being viewed, if any
     $user = auth()->user();
+    $inBasket = \App\Support\Basket::count();
 @endphp
 <header class="sticky top-0 z-40 border-b-2 border-line bg-paper" x-data="{ open: false }" @keydown.escape.window="open = false">
     <div class="shell flex h-16 items-center gap-2 sm:gap-3">
@@ -28,6 +29,13 @@
             <span x-show="dark" x-cloak><x-icon name="sun"/></span>
         </button>
 
+        <a href="{{ route('basket.show') }}" class="btn btn-sm relative h-10 w-10 p-0! {{ $inBasket ? 'btn-sun' : 'btn-plain' }}" aria-label="Your basket ({{ $inBasket }} {{ Str::plural('item', $inBasket) }})">
+            <x-icon name="basket"/>
+            @if ($inBasket)
+                <span class="absolute -top-2 -right-2 grid h-5 min-w-5 place-items-center rounded-full border-2 border-night bg-tomato px-1 text-xs font-black text-night">{{ $inBasket }}</span>
+            @endif
+        </a>
+
         @auth
             <a href="{{ route('entries.create') }}" class="btn btn-sm btn-primary hidden h-10 sm:inline-flex"><x-icon name="upload" size="h-4 w-4"/> Upload</a>
 
@@ -40,6 +48,7 @@
                         <span class="text-soft">{{ $user->roleLabel() }}</span>
                     </p>
                     <hr class="mb-1 border-line/20">
+                    <a class="menu-item" href="{{ route('library') }}"><x-icon name="book" size="h-4.5 w-4.5"/> My library</a>
                     <a class="menu-item" href="{{ route('entries.mine') }}"><x-icon name="grid" size="h-4.5 w-4.5"/> My uploads</a>
                     <a class="menu-item" href="{{ route('profile.edit') }}"><x-icon name="user" size="h-4.5 w-4.5"/> My account</a>
                     @if ($user->isAdmin())
@@ -82,6 +91,7 @@
             <div class="flex flex-wrap gap-2 border-t-2 border-line/15 pt-4">
                 @auth
                     <a class="btn btn-sm btn-primary" href="{{ route('entries.create') }}"><x-icon name="upload" size="h-4 w-4"/> Upload</a>
+                    <a class="btn btn-sm" href="{{ route('library') }}">My library</a>
                     <a class="btn btn-sm" href="{{ route('entries.mine') }}">My uploads</a>
                     <a class="btn btn-sm" href="{{ route('profile.edit') }}">My account</a>
                     @if ($user->isAdmin())

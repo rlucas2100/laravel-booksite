@@ -67,6 +67,29 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /** The ids of the entries this member has paid for. */
+    public function purchasedIds(): array
+    {
+        return OrderItem::query()
+            ->whereNotNull('entry_id')
+            ->whereHas('order', fn ($order) => $order->where('user_id', $this->id)->where('status', Order::PAID))
+            ->pluck('entry_id')->all();
+    }
+
+    /** May this member download or play the entry? Free ones always; priced ones once bought (or if it is theirs). */
+    public function mayOpen(Entry $entry): bool
+    {
+        return $entry->isFree()
+            || $entry->user_id === $this->id
+            || $this->isOwner()
+            || in_array($entry->id, $this->purchasedIds(), true);
+    }
+
     /** The Super-Admin: passes every permission check (see AppServiceProvider). */
     public function isOwner(): bool
     {

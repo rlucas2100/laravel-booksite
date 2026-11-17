@@ -5,14 +5,18 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\CommunityController as AdminCommunityController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EntryController as AdminEntryController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\BasketController;
 use App\Http\Controllers\CatalogueController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +32,14 @@ Route::get('/categories/{category}', [CatalogueController::class, 'category'])->
 // Covers and files are kept out of the public folder and handed out by a controller.
 Route::get('/media/{entry}/cover', [MediaController::class, 'cover'])->name('media.cover');
 Route::get('/media/{entry}/file', [MediaController::class, 'file'])->name('media.file');
+
+// The basket is open to everyone; paying needs an account.
+Route::get('/basket', [BasketController::class, 'show'])->name('basket.show');
+Route::post('/basket/{entry}', [BasketController::class, 'add'])->name('basket.add');
+Route::delete('/basket/{entry}', [BasketController::class, 'remove'])->name('basket.remove');
+
+// Stripe reports finished payments here. No sign-in or CSRF token: it is checked by its signature.
+Route::post('/stripe/webhook', StripeWebhookController::class)->name('stripe.webhook');
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +61,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/entries/{entry}/comments', [CommentController::class, 'store'])->middleware('throttle:community')->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
+    Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:uploads')->name('checkout.store');
+    Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/library', [CheckoutController::class, 'library'])->name('library');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
@@ -67,6 +83,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/', AdminDashboardController::class)->name('dashboard');
     Route::get('/catalogue', AdminEntryController::class)->name('entries');
 
+    Route::get('/orders', AdminOrderController::class)->name('orders');
     Route::get('/community', [AdminCommunityController::class, 'index'])->name('community');
 
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');

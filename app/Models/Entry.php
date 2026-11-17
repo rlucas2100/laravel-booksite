@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EntryType;
 use App\Models\Concerns\Sandboxed;
+use App\Support\Money;
 use Database\Factories\EntryFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,7 +36,7 @@ class Entry extends Model
         'az' => 'A to Z',
     ];
 
-    protected $fillable = ['title', 'creator', 'category_id', 'year', 'description', 'body', 'link'];
+    protected $fillable = ['title', 'creator', 'category_id', 'year', 'description', 'body', 'link', 'price'];
 
     protected function casts(): array
     {
@@ -46,6 +47,7 @@ class Entry extends Model
             'year' => 'integer',
             'duration' => 'integer',
             'file_size' => 'integer',
+            'price' => 'integer',
         ];
     }
 
@@ -131,6 +133,18 @@ class Entry extends Model
     }
 
     /* ---------------------------------------------------------------- helpers */
+
+    /** No price means anyone may have it. */
+    public function isFree(): bool
+    {
+        return ! $this->price;
+    }
+
+    /** "£2.99", or "Free". */
+    public function priceLabel(): string
+    {
+        return $this->isFree() ? 'Free' : Money::pounds($this->price);
+    }
 
     /** A slug nobody else is using: "dracula", "dracula-2"... */
     public static function uniqueSlug(string $title, ?int $ignoreId = null): string

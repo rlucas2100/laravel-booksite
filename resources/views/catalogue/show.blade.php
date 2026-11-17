@@ -2,6 +2,9 @@
     use App\Enums\EntryType;
 
     $type = $entry->type;
+    // Free things are open to all; priced ones to whoever bought (or uploaded) them.
+    $unlocked = $entry->isFree() || (bool) auth()->user()?->mayOpen($entry);
+    $inBasket = \App\Support\Basket::has($entry);
     $isArticle = $type === EntryType::Article;
     $host = $entry->link ? (string) parse_url($entry->link, PHP_URL_HOST) : '';
     $linkLabel = match (true) {
@@ -23,7 +26,12 @@
                 <a class="hover:underline" href="{{ route('categories.show', $entry->category) }}">{{ $entry->category->name }}</a>
             </nav>
 
-            @if ($type === EntryType::Video)
+            @if ($type === EntryType::Video && ! $unlocked)
+                <div class="relative mx-auto mb-8 max-w-4xl">
+                    <x-cover :entry="$entry" class="shadow-pop-lg"/>
+                    <span class="pow absolute inset-x-0 bottom-5 mx-auto w-fit rounded-xl border-2 border-night bg-sun px-4 py-1.5 text-2xl text-night shadow-pop"><x-icon name="lock" class="inline"/> Buy it to watch</span>
+                </div>
+            @elseif ($type === EntryType::Video)
                 <div class="card mx-auto mb-8 max-w-4xl overflow-hidden border-night bg-night shadow-pop-lg">
                     <video class="block aspect-video w-full bg-night" controls playsinline preload="metadata" src="{{ $entry->fileUrl() }}">
                         Your browser can’t play this video. <a href="{{ $entry->fileUrl(true) }}">Download it</a> instead.
@@ -48,6 +56,11 @@
                     <p class="flex flex-wrap items-center gap-2">
                         <span class="chip chip-tone"><x-icon :name="$type->icon()" size="h-3.5 w-3.5"/> {{ $type->label() }}</span>
                         <a class="chip hover:bg-sun hover:text-night" href="{{ route('categories.show', $entry->category) }}">{{ $entry->category->name }}</a>
+                        @if ($entry->isFree())
+                            <span class="chip bg-mint text-night">Free</span>
+                        @elseif ($unlocked)
+                            <span class="chip bg-mint text-night"><x-icon name="check" size="h-3.5 w-3.5"/> Yours</span>
+                        @endif
                         @if ($entry->isSandboxed())
                             <span class="chip bg-sun text-night" title="This is the public demo: your uploads are only visible in your own browser, for {{ config('shop.sandbox_hours') }} hours.">
                                 <x-icon name="lock" size="h-3.5 w-3.5"/> Only you can see this
@@ -80,7 +93,7 @@
 
                     <p class="mt-5 max-w-2xl text-lg leading-relaxed {{ $isArticle ? 'font-display text-xl' : '' }}">{{ $entry->description }}</p>
 
-                    @if ($type === EntryType::Audio && $entry->file_path)
+                    @if ($type === EntryType::Audio && $entry->file_path && $unlocked)
                         <div class="mt-6 max-w-xl">
                             @include('catalogue.partials.audio-player')
                         </div>
@@ -88,7 +101,17 @@
 
                     {{-- What you can do with it --}}
                     <div class="mt-6 flex flex-wrap items-center gap-3">
-                        @if ($type === EntryType::Book && $entry->file_path)
+                        @if (! $unlocked)
+                            <span class="font-display text-4xl font-black tabular-nums">{{ $entry->priceLabel() }}</span>
+                            @if ($inBasket)
+                                <a class="btn btn-lg btn-tone" href="{{ route('basket.show') }}"><x-icon name="basket"/> In your basket: go and pay</a>
+                            @else
+                                <form method="POST" action="{{ route('basket.add', $entry) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-lg btn-tone"><x-icon name="basket"/> Add to basket</button>
+                                </form>
+                            @endif
+                        @elseif ($type === EntryType::Book && $entry->file_path)
                             @auth
                                 <a class="btn btn-lg btn-tone" href="{{ $entry->fileUrl(true) }}">
                                     <x-icon name="download"/> Download the PDF

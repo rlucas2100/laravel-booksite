@@ -17,6 +17,10 @@
                 </span>
             @endif
 
+            @unless ($entry->isFree())
+                <span class="pow absolute top-2 right-2 -rotate-3 rounded-lg border-2 border-night bg-sun px-2 py-0.5 text-lg text-night shadow-pop-sm">{{ $entry->priceLabel() }}</span>
+            @endunless
+
             @if ($entry->isSandboxed())
                 <span class="chip absolute top-2 left-2 bg-sun text-night" title="Only you can see this in the demo">Only you</span>
             @endif

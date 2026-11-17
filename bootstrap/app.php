@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $middleware->alias(['admin' => EnsureAdmin::class]);
+        $middleware->preventRequestForgery(except: ['stripe/webhook']);
 
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('home'));

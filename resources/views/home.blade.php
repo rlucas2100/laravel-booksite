@@ -12,7 +12,7 @@
 
         <div class="shell relative grid items-center gap-8 py-12 lg:grid-cols-[1.05fr_.95fr] lg:py-16">
             <div>
-                <p class="chip border-night bg-cream text-night">{{ $total }} titles · all free · all yours to review</p>
+                <p class="chip border-night bg-cream text-night">{{ $total }} titles · free and paid · all yours to review</p>
 
                 <h1 class="mt-5 text-5xl leading-[.95] font-black sm:text-6xl xl:text-7xl">
                     Stories you can’t
@@ -25,7 +25,7 @@
                 </h1>
 
                 <p class="mt-7 max-w-xl text-lg font-medium sm:text-xl">
-                    Books to download, video to watch, audio to play and a blog to argue with.
+                    Books to buy or download free, video to watch, audio to play and a blog to argue with.
                     Rate anything from <strong>0 to 5 stars</strong>, write a review and join the conversation.
                 </p>
 
@@ -52,7 +52,7 @@
                     <svg viewBox="0 0 100 100" class="absolute inset-0 h-full w-full" aria-hidden="true">
                         <polygon points="50,2 60,14 74,7 77,22 92,22 88,37 100,46 89,56 96,70 81,74 80,89 65,86 55,98 45,87 31,94 26,80 11,81 14,66 1,57 12,46 4,32 19,27 20,12 35,14" fill="#ff5c39" stroke="#17151c" stroke-width="3" stroke-linejoin="round"/>
                     </svg>
-                    <span class="pow relative text-2xl sm:text-3xl">Free!</span>
+                    <span class="pow relative text-2xl sm:text-3xl">New!</span>
                 </div>
 
                 <x-pip class="animate-bob absolute -bottom-6 -left-3 z-30 h-28 w-28 sm:-left-8 sm:h-36 sm:w-36"/>

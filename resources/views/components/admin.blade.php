@@ -5,6 +5,7 @@
     $tabs = array_filter([
         ['admin.dashboard', 'Overview', 'grid', true],
         ['admin.entries', 'Catalogue', 'book', $user->can('manage-entries')],
+        ['admin.orders', 'Orders', 'basket', $user->can('manage-entries')],
         ['admin.community', 'Reviews & comments', 'chat', $user->can('moderate-community')],
         ['admin.users.index', 'Members', 'users', $user->can('manage-users')],
         ['admin.categories.index', 'Categories', 'tag', $user->can('manage-categories')],

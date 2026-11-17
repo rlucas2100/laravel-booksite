@@ -6,6 +6,7 @@ use App\Enums\EntryType;
 use App\Http\Requests\EntryRequest;
 use App\Models\Category;
 use App\Models\Entry;
+use App\Support\Money;
 use App\Support\Sandbox;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class EntryController extends Controller
             ]);
         }
 
-        $entry = new Entry($request->safe()->only(['title', 'creator', 'category_id', 'year', 'description', 'body', 'link']));
+        $entry = new Entry($this->details($request));
         $entry->type = $request->entryType();
         $entry->user_id = $request->user()->id;        // the uploader; never changed by a later edit
         $entry->slug = Entry::uniqueSlug($entry->title);
@@ -76,7 +77,7 @@ class EntryController extends Controller
     {
         $this->authorize('update', $entry);
 
-        $entry->fill($request->safe()->only(['title', 'creator', 'category_id', 'year', 'description', 'body', 'link']));
+        $entry->fill($this->details($request));
 
         // The address only changes when the title does.
         if ($entry->isDirty('title')) {
@@ -103,6 +104,13 @@ class EntryController extends Controller
         $back = $request->user()->id === $entry->user_id ? route('entries.mine') : route('admin.entries');
 
         return redirect()->to($back)->with('status', '"'.$entry->title.'" was taken off the shelf.');
+    }
+
+    /** The typed-in details. The price arrives in pounds and is kept in pence. */
+    private function details(EntryRequest $request): array
+    {
+        return $request->safe()->only(['title', 'creator', 'category_id', 'year', 'description', 'body', 'link'])
+            + ['price' => Money::pence($request->validated('price'))];
     }
 
     /** Saves a newly chosen cover and file under random names, replacing any old ones. */
